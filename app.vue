@@ -1,7 +1,7 @@
 <template>
   <header class="header">
     <div class="container header__container">
-      <NuxtLink :to="{ name: 'Main' }" href="#" class="header__logo-link">
+      <NuxtLink :to="{ name: 'Main' }" class="header__logo-link">
         <img src="/assets/img/Qtim.svg" alt="QTIM" class="header__logo">
       </NuxtLink>
 

@@ -6,16 +6,16 @@
           Articles
         </h2>
 
-        <PostsList
-          :posts="posts"
-        />
+        <div class="wrapper-loading" v-if="isPostLoading">
+          Loading...
+          <div class="wrapper-loading spinner-3">
+          </div>
+        </div>
 
-        <BasePagination
-          v-model:page="page"
-          v-model:offset="offset"
-          :posts-per-page="postsPerPage"
-          :pages-count="countPages"
-        />
+        <PostsList v-else :posts="posts" />
+
+        <BasePagination v-model:page="page" v-model:offset="offset" :posts-per-page="postsPerPage"
+          :pages-count="countPages" />
 
       </div>
     </section>
@@ -35,7 +35,7 @@ const postsData = ref<IArticle[]>([]);
 const page = ref<number>(1);
 const postsPerPage: number = 8;
 const offset = ref<number>((page.value - 1) * postsPerPage);
-const isLoading = ref<boolean>(true);
+const isPostLoading = ref<boolean>(false);
 
 const posts = computed(() =>
   postsData.value ? postsData.value.slice(offset.value, offset.value + postsPerPage) : []);
@@ -44,9 +44,15 @@ const countPages = computed<number>((): number =>
   postsData.value ? Math.trunc(postsData.value.length / postsPerPage) : 0);
 
 const loadPosts = (): void => {
+  isPostLoading.value = true;
+
   axios.get(BASE_URL)
     .then((response: AxiosResponse): void => postsData.value = response.data)
-    .catch((err: AxiosResponse) => console.log(err));
+    .catch((err: AxiosResponse) => {
+      isPostLoading.value = false;
+      console.log(err);
+    })
+    .finally(() => isPostLoading.value = false);
 };
 
 onMounted(() => {
